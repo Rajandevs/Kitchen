@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hamro Kitchen — Pre-order for Pickup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#211C18; --paper:#F7F1E6; --paprika:#A8442A; --paprika-dark:#8A3620;
+    --juniper:#45543C; --mustard:#D9A441; --stone:#E7DFCF; --stone-line:#D8CDB6; --white:#FFFDF9;
+    --radius-s:4px; --radius-m:10px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Work Sans',sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased;}
+  h1,h2,h3,.display{font-family:'Fraunces',serif;font-weight:600;margin:0;letter-spacing:-0.01em;}
+  a{color:inherit;} button{font-family:inherit;cursor:pointer;} img,svg{display:block;max-width:100%;}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 28px;}
+  :focus-visible{outline:3px solid var(--mustard);outline-offset:2px;}
+
+  header{position:sticky;top:0;z-index:40;background:rgba(247,241,230,0.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--stone-line);}
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:18px 0;gap:16px;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:'Fraunces',serif;font-weight:600;font-size:1.3rem;}
+  .brand svg{width:30px;height:30px;flex-shrink:0;}
+  .nav-links{display:flex;gap:28px;font-size:0.95rem;list-style:none;margin:0;padding:0;}
+  .nav-links a{text-decoration:none;padding-bottom:2px;border-bottom:1px solid transparent;}
+  .nav-links a:hover{border-bottom-color:var(--paprika);}
+  .nav-right{display:flex;align-items:center;gap:12px;}
+  .cart-btn{display:flex;align-items:center;gap:8px;background:var(--ink);color:var(--paper);border:none;border-radius:999px;padding:10px 18px;font-size:0.9rem;font-weight:600;}
+  .cart-btn:hover{background:var(--paprika-dark);}
+  .cart-count{background:var(--mustard);color:var(--ink);border-radius:999px;min-width:20px;height:20px;font-size:0.75rem;display:flex;align-items:center;justify-content:center;padding:0 5px;}
+  .login-btn{background:transparent;border:1px solid var(--ink);color:var(--ink);border-radius:999px;padding:9px 18px;font-size:0.9rem;font-weight:600;}
+  .login-btn:hover{background:var(--ink);color:var(--paper);}
+  .profile-chip{display:flex;align-items:center;gap:9px;background:var(--white);border:1px solid var(--stone-line);border-radius:999px;padding:6px 14px 6px 6px;font-size:0.88rem;font-weight:600;}
+  .profile-chip .avatar{width:28px;height:28px;border-radius:50%;background:var(--juniper);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700;}
+
+  .hero{padding:72px 0 96px;display:grid;grid-template-columns:1.1fr 0.9fr;gap:48px;align-items:center;}
+  .eyebrow{color:var(--paprika);font-weight:600;font-size:0.95rem;margin-bottom:14px;}
+  .hero h1{font-size:3.2rem;line-height:1.08;max-width:11ch;}
+  .hero p.lede{font-size:1.15rem;max-width:42ch;margin-top:20px;color:#4A433C;}
+  .hero-ctas{display:flex;gap:14px;margin-top:32px;flex-wrap:wrap;}
+  .btn-primary{background:var(--paprika);color:var(--white);border:none;padding:14px 26px;border-radius:var(--radius-s);font-size:1rem;font-weight:600;}
+  .btn-primary:hover{background:var(--paprika-dark);}
+  .btn-primary:disabled{background:#C9BFAE;color:#8A8272;cursor:not-allowed;}
+  .btn-ghost{background:transparent;border:1px solid var(--ink);color:var(--ink);padding:14px 26px;border-radius:var(--radius-s);font-size:1rem;font-weight:600;}
+  .btn-ghost:hover{background:var(--ink);color:var(--paper);}
+  .hero-art{position:relative;}
+  .steam{transform-origin:center;animation:rise 4s ease-in-out infinite;}
+  .steam.s2{animation-delay:1.3s;} .steam.s3{animation-delay:2.6s;}
+  @keyframes rise{0%{opacity:0;transform:translateY(6px) scaleY(0.9);}30%{opacity:0.6;}80%{opacity:0;}100%{opacity:0;transform:translateY(-22px) scaleY(1.05);}}
+  @media (prefers-reduced-motion:reduce){ .steam{animation:none;opacity:0.4;} }
+
+  .section{padding:64px 0;}
+  .section-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:36px;gap:20px;flex-wrap:wrap;}
+  .section-head h2{font-size:2.1rem;} .section-head p{color:#4A433C;max-width:40ch;margin-top:8px;}
+
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;}
+  .tab{border:1px solid var(--stone-line);background:var(--white);padding:9px 16px;border-radius:999px;font-size:0.9rem;font-weight:500;}
+  .tab.active{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+  .menu-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--stone-line);border:1px solid var(--stone-line);border-radius:var(--radius-m);overflow:hidden;margin-top:28px;}
+  .item{background:var(--white);padding:22px 24px;display:flex;justify-content:space-between;gap:16px;}
+  .item-info h3{font-size:1.15rem;font-weight:600;}
+  .item-info .desc{color:#6B6255;font-size:0.9rem;margin-top:5px;max-width:34ch;}
+  .item-info .price{margin-top:10px;font-weight:600;color:var(--paprika-dark);}
+  .item-add{display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;gap:10px;}
+  .stepper{display:flex;align-items:center;gap:10px;}
+  .stepper button{width:30px;height:30px;border-radius:50%;border:1px solid var(--ink);background:var(--white);font-size:1rem;line-height:1;}
+  .stepper button:hover{background:var(--ink);color:var(--paper);}
+  .stepper span{min-width:16px;text-align:center;font-weight:600;}
+  .add-btn{border:none;background:var(--juniper);color:var(--white);padding:9px 16px;border-radius:var(--radius-s);font-size:0.85rem;font-weight:600;}
+  .add-btn:hover{background:#374030;}
+  @media (max-width:720px){ .menu-grid{grid-template-columns:1fr;} }
+
+  .how{background:var(--stone);}
+  .how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;margin-top:36px;}
+  .how-card{background:var(--white);border:1px solid var(--stone-line);border-radius:var(--radius-m);padding:26px;}
+  .how-card .mark{font-family:'Fraunces',serif;font-size:1.6rem;color:var(--paprika);margin-bottom:10px;}
+  .how-card h3{font-size:1.1rem;margin-bottom:8px;} .how-card p{color:#4A433C;font-size:0.92rem;}
+  @media (max-width:800px){ .how-grid{grid-template-columns:1fr;} }
+
+  footer{border-top:1px solid var(--stone-line);padding:40px 0;}
+  .footer-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;font-size:0.88rem;color:#6B6255;}
+
+  .overlay{position:fixed;inset:0;background:rgba(33,28,24,0.45);opacity:0;pointer-events:none;transition:opacity 0.25s ease;z-index:50;}
+  .overlay.open{opacity:1;pointer-events:auto;}
+  .drawer{position:fixed;top:0;right:0;height:100%;width:min(420px,92vw);background:var(--paper);z-index:60;transform:translateX(100%);transition:transform 0.3s ease;display:flex;flex-direction:column;}
+  .drawer.open{transform:translateX(0);}
+  .drawer-head{padding:22px 24px;border-bottom:1px solid var(--stone-line);display:flex;justify-content:space-between;align-items:center;}
+  .drawer-close{background:none;border:none;font-size:1.4rem;line-height:1;color:var(--ink);}
+  .drawer-body{flex:1;overflow-y:auto;padding:20px 24px;}
+  .cart-line{display:flex;justify-content:space-between;gap:12px;padding:14px 0;border-bottom:1px solid var(--stone-line);}
+  .cart-line .name{font-weight:600;font-size:0.96rem;}
+  .cart-line .sub{color:#6B6255;font-size:0.82rem;margin-top:3px;}
+  .cart-line .line-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px;}
+  .remove-link{background:none;border:none;color:var(--paprika);font-size:0.8rem;text-decoration:underline;padding:0;}
+  .empty-cart{color:#6B6255;text-align:center;padding:60px 10px;font-size:0.95rem;}
+  .drawer-foot{border-top:1px solid var(--stone-line);padding:20px 24px;}
+  .totals-row{display:flex;justify-content:space-between;font-size:0.95rem;margin-bottom:6px;}
+  .totals-row.grand{font-weight:700;font-size:1.1rem;margin-top:10px;}
+  .full-btn{width:100%;margin-top:14px;padding:14px;border:none;border-radius:var(--radius-s);background:var(--paprika);color:var(--white);font-weight:600;font-size:1rem;}
+  .full-btn:disabled{background:#C9BFAE;color:#8A8272;cursor:not-allowed;}
+  .full-btn:hover:not(:disabled){background:var(--paprika-dark);}
+  .muted-btn{width:100%;margin-top:10px;padding:13px;border:1px solid var(--stone-line);border-radius:var(--radius-s);background:var(--white);color:#6B6255;font-weight:600;font-size:0.92rem;}
+  .muted-btn:hover{background:var(--stone);}
+
+  /* Profile drawer */
+  .profile-block{margin-bottom:24px;}
+  .profile-name{font-family:'Fraunces',serif;font-size:1.3rem;}
+  .profile-row{font-size:0.9rem;color:#4A433C;margin-top:4px;}
+  .logout-btn{margin-top:14px;background:none;border:1px solid var(--paprika);color:var(--paprika);border-radius:var(--radius-s);padding:9px 16px;font-size:0.85rem;font-weight:600;}
+  .logout-btn:hover{background:var(--paprika);color:var(--white);}
+  .order-hist-title{font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:0.03em;color:#8A8272;margin-bottom:12px;}
+  .order-card{border:1px solid var(--stone-line);border-radius:var(--radius-s);padding:14px 16px;margin-bottom:12px;background:var(--white);}
+  .order-card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+  .order-card-head .num{font-weight:700;font-size:0.92rem;}
+  .order-items-line{font-size:0.83rem;color:#6B6255;margin-bottom:6px;}
+  .order-meta{font-size:0.8rem;color:#8A8272;}
+  .badge{font-size:0.72rem;font-weight:700;padding:4px 10px;border-radius:999px;text-transform:capitalize;}
+  .badge.pending{background:#F5E6C4;color:#8A6A15;}
+  .badge.made{background:#DCE4D6;color:var(--juniper);}
+  .badge.fulfilled{background:#E2E2E2;color:#555;}
+
+  .modal-wrap{position:fixed;inset:0;z-index:70;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;background:rgba(33,28,24,0.55);padding:40px 16px;}
+  .modal-wrap.open{display:flex;}
+  .modal{background:var(--white);border-radius:var(--radius-m);max-width:480px;width:100%;padding:32px;position:relative;}
+  .modal-close{position:absolute;top:18px;right:18px;background:none;border:none;font-size:1.3rem;color:var(--ink);}
+  .modal h2{font-size:1.6rem;margin-bottom:6px;} .modal .sub{color:#6B6255;font-size:0.92rem;margin-bottom:24px;}
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-size:0.85rem;font-weight:600;margin-bottom:6px;}
+  .field input,.field select,.field textarea{width:100%;padding:11px 12px;border:1px solid var(--stone-line);border-radius:var(--radius-s);font-family:inherit;font-size:0.95rem;background:var(--paper);color:var(--ink);}
+  .field textarea{resize:vertical;min-height:70px;}
+  .order-summary{background:var(--paper);border:1px solid var(--stone-line);border-radius:var(--radius-s);padding:14px 16px;margin-bottom:20px;font-size:0.9rem;}
+  .order-summary .row{display:flex;justify-content:space-between;margin-bottom:4px;}
+  .form-error{background:#F7E3DC;color:var(--paprika-dark);border-radius:var(--radius-s);padding:10px 14px;font-size:0.85rem;margin-bottom:16px;display:none;}
+  .form-error.show{display:block;}
+  .auth-tabs{display:flex;gap:6px;margin-bottom:22px;background:var(--paper);border-radius:999px;padding:4px;}
+  .auth-tab{flex:1;border:none;background:none;padding:9px;border-radius:999px;font-weight:600;font-size:0.88rem;color:#6B6255;}
+  .auth-tab.active{background:var(--ink);color:var(--paper);}
+  .confirm-icon{width:56px;height:56px;border-radius:50%;background:var(--juniper);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;}
+  .confirm-icon svg{stroke:var(--white);width:28px;height:28px;}
+  .confirm-num{font-family:'Fraunces',serif;font-size:1.8rem;text-align:center;color:var(--paprika-dark);margin:14px 0 4px;}
+
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--paper);padding:13px 22px;border-radius:999px;font-size:0.9rem;z-index:90;opacity:0;pointer-events:none;transition:all 0.25s ease;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  @media (max-width:860px){
+    .hero{grid-template-columns:1fr;padding-top:40px;}
+    .hero h1{font-size:2.3rem;max-width:none;}
+    .nav-links{display:none;}
+    .hero-art{order:-1;max-width:280px;margin:0 auto;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <div class="brand">
+      <svg viewBox="0 0 40 40" fill="none"><path d="M20 4 L34 34 H6 Z" fill="#A8442A"/><path d="M20 4 L27 34 H13 Z" fill="#F7F1E6" opacity="0.85"/></svg>
+      Hamro Kitchen
+    </div>
+    <ul class="nav-links">
+      <li><a href="#menu">Menu</a></li>
+      <li><a href="#how">Pickup &amp; payment</a></li>
+      <li><a href="#footer">Visit us</a></li>
+    </ul>
+    <div class="nav-right">
+      <div id="authArea"></div>
+      <button class="cart-btn" id="openCartBtn" aria-label="Open cart">
+        Your order <span class="cart-count" id="cartCount">0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<section class="hero wrap">
+  <div>
+    <div class="eyebrow">Pre-order · Pay ahead · Skip the wait</div>
+    <h1>Order from the mountains, ready when you walk in.</h1>
+    <p class="lede">Pick your momos, thukpa and sekuwa, choose a pickup time, and log in so your order is actually waiting for you — not just a browser tab.</p>
+    <div class="hero-ctas">
+      <a href="#menu" class="btn-primary">Browse the menu</a>
+      <a href="#how" class="btn-ghost">How pickup works</a>
+    </div>
+  </div>
+  <div class="hero-art">
+    <svg viewBox="0 0 320 320" width="100%">
+      <ellipse cx="160" cy="270" rx="120" ry="14" fill="#00000010"/>
+      <path d="M60 240 Q160 200 260 240 L250 250 Q160 218 70 250 Z" fill="#45543C"/>
+      <ellipse cx="160" cy="230" rx="95" ry="24" fill="#EFE6D2"/>
+      <ellipse cx="160" cy="224" rx="95" ry="20" fill="#F7F1E6"/>
+      <circle cx="120" cy="222" r="12" fill="#D9A441"/>
+      <circle cx="160" cy="216" r="13" fill="#EFCB7A"/>
+      <circle cx="200" cy="222" r="12" fill="#D9A441"/>
+      <circle cx="140" cy="230" r="12" fill="#EFCB7A"/>
+      <circle cx="180" cy="230" r="12" fill="#D9A441"/>
+      <g class="steam s1"><path d="M130 190 Q125 175 135 165 Q145 155 138 142" stroke="#B7AE9C" stroke-width="4" fill="none" stroke-linecap="round"/></g>
+      <g class="steam s2"><path d="M160 188 Q155 172 165 160 Q175 150 168 136" stroke="#B7AE9C" stroke-width="4" fill="none" stroke-linecap="round"/></g>
+      <g class="steam s3"><path d="M190 190 Q185 175 195 165 Q205 155 198 142" stroke="#B7AE9C" stroke-width="4" fill="none" stroke-linecap="round"/></g>
+    </svg>
+  </div>
+</section>
+
+<section class="section" id="menu">
+  <div class="wrap">
+    <div class="section-head">
+      <div><h2>Today's menu</h2><p>Everything below can be pre-ordered. Prices in NPR.</p></div>
+      <div class="tabs" id="tabs"></div>
+    </div>
+    <div class="menu-grid" id="menuGrid"></div>
+  </div>
+</section>
+
+<section class="section how" id="how">
+  <div class="wrap">
+    <div class="section-head">
+      <div><h2>Order ahead, pay at pickup</h2><p>Online payment is coming soon. For now, place your order and settle up when you collect it.</p></div>
+    </div>
+    <div class="how-grid">
+      <div class="how-card"><div class="mark">1</div><h3>Log in &amp; build your order</h3><p>Create an account once, then add dishes from the menu above.</p></div>
+      <div class="how-card"><div class="mark">2</div><h3>Choose a pickup time</h3><p>Confirm your order and get a real order number tied to your account.</p></div>
+      <div class="how-card"><div class="mark">3</div><h3>Walk in, walk out</h3><p>Show your order number at pickup. Track its status any time from your profile.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer id="footer">
+  <div class="wrap footer-row">
+    <span>Hamro Kitchen · Butwal, Lumbini Province · Open 11am – 9pm</span>
+    <span>Built by Yeti Digitals</span>
+  </div>
+</footer>
+
+<!-- Cart drawer -->
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="drawer" aria-label="Your order">
+  <div class="drawer-head"><h2 style="font-size:1.3rem;">Your order</h2><button class="drawer-close" id="closeDrawerBtn" aria-label="Close cart">&times;</button></div>
+  <div class="drawer-body" id="drawerBody"></div>
+  <div class="drawer-foot">
+    <div class="totals-row"><span>Subtotal</span><span id="subtotalText">Rs. 0</span></div>
+    <div class="totals-row grand"><span>Total</span><span id="totalText">Rs. 0</span></div>
+    <button class="full-btn" id="checkoutBtn" disabled>Continue to pickup details</button>
+  </div>
+</aside>
+
+<!-- Profile drawer -->
+<aside class="drawer" id="profileDrawer" aria-label="Your profile">
+  <div class="drawer-head"><h2 style="font-size:1.3rem;">Your profile</h2><button class="drawer-close" id="closeProfileBtn" aria-label="Close profile">&times;</button></div>
+  <div class="drawer-body" id="profileBody"></div>
+</aside>
+
+<!-- Auth modal -->
+<div class="modal-wrap" id="authModal">
+  <div class="modal">
+    <button class="modal-close" id="closeAuthBtn" aria-label="Close">&times;</button>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabLogin">Log in</button>
+      <button class="auth-tab" id="tabSignup">Sign up</button>
+    </div>
+    <div class="form-error" id="authError"></div>
+
+    <form id="loginForm">
+      <div class="field"><label for="loginEmail">Email</label><input type="email" id="loginEmail" required></div>
+      <div class="field"><label for="loginPassword">Password</label><input type="password" id="loginPassword" required></div>
+      <button type="submit" class="full-btn">Log in</button>
+    </form>
+
+    <form id="signupForm" style="display:none;">
+      <div class="field"><label for="signupName">Full name</label><input type="text" id="signupName" required></div>
+      <div class="field"><label for="signupEmail">Email</label><input type="email" id="signupEmail" required></div>
+      <div class="field"><label for="signupPhone">Phone</label><input type="tel" id="signupPhone"></div>
+      <div class="field"><label for="signupPassword">Password</label><input type="password" id="signupPassword" required minlength="6"></div>
+      <button type="submit" class="full-btn">Create account</button>
+    </form>
+  </div>
+</div>
+
+<!-- Checkout modal -->
+<div class="modal-wrap" id="checkoutModal">
+  <div class="modal">
+    <button class="modal-close" id="closeCheckoutBtn" aria-label="Close">&times;</button>
+    <h2>Pickup details</h2>
+    <p class="sub">Pay online with eSewa, or settle it at pickup — your choice.</p>
+    <div class="form-error" id="checkoutError"></div>
+    <div class="order-summary" id="checkoutSummary"></div>
+
+    <form id="checkoutForm">
+      <div class="field"><label for="custName">Full name</label><input type="text" id="custName" required></div>
+      <div class="field"><label for="custPhone">Phone number</label><input type="tel" id="custPhone" required></div>
+      <div class="field">
+        <label for="pickupTime">Pickup time</label>
+        <select id="pickupTime" required><option value="">Select a time</option></select>
+      </div>
+      <div class="field"><label for="custNote">Note for the kitchen (optional)</label><textarea id="custNote" placeholder="e.g. less spicy, no coriander"></textarea></div>
+
+      <button type="button" class="muted-btn" id="payNowBtn">Pay with eSewa</button>
+    </form>
+  </div>
+</div>
+
+<!-- Confirmation modal -->
+<div class="modal-wrap" id="confirmModal">
+  <div class="modal">
+    <button class="modal-close" id="closeConfirmBtn" aria-label="Close">&times;</button>
+    <div class="confirm-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+    <h2 style="text-align:center;">Order placed</h2>
+    <p class="sub" style="text-align:center;">Pay at pickup. We'll start on it soon.</p>
+    <div class="confirm-num" id="orderNumber">#YK-0000</div>
+    <div class="order-summary" id="confirmSummary"></div>
+    <button class="full-btn" id="doneBtn">Done</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  const API = '/api';
+  const MENU = [
+    {id:'m1', cat:'Momo', name:'Steam Buff Momo', desc:'Ten pieces, hand-folded, served with tomato achar.', price:220},
+    {id:'m2', cat:'Momo', name:'Jhol Momo', desc:'Chicken momo bathed in a tangy sesame-chili broth.', price:250},
+    {id:'m3', cat:'Momo', name:'Fried Veg Momo', desc:'Crisp-fried vegetable momo, served with mint chutney.', price:200},
+    {id:'t1', cat:'Thukpa', name:'Chicken Thukpa', desc:'Hand-pulled noodles in a warming ginger broth.', price:280},
+    {id:'t2', cat:'Thukpa', name:'Veg Thenthuk', desc:'Torn noodle soup with seasonal mountain vegetables.', price:240},
+    {id:'s1', cat:'Sekuwa', name:'Chicken Sekuwa', desc:'Charcoal-grilled chicken skewers, timur pepper rub.', price:320},
+    {id:'s2', cat:'Sekuwa', name:'Buff Sekuwa Platter', desc:'Grilled buff cubes with beaten rice and chiura.', price:350},
+    {id:'d1', cat:'Drinks', name:'Milk Chiya', desc:'Spiced milk tea, brewed strong.', price:60},
+    {id:'d2', cat:'Drinks', name:'Tongba', desc:'Warm fermented millet brew, refillable pot.', price:180},
+  ];
+  const CATEGORIES = ['All','Momo','Thukpa','Sekuwa','Drinks'];
+  const cart = {};
+  let activeCat = 'All';
+  let currentUser = null;
+  let pendingCheckoutAfterLogin = false;
+
+  const el = (id) => document.getElementById(id);
+  function money(n){ return 'Rs. ' + n.toLocaleString('en-IN'); }
+
+  function showToast(msg){
+    const t = el('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(()=> t.classList.remove('show'), 2600);
+  }
+
+  async function api(path, opts={}){
+    const res = await fetch(API + path, {
+      method: opts.method || 'GET',
+      headers: {'Content-Type':'application/json'},
+      credentials: 'include',
+      body: opts.body ? JSON.stringify(opts.body) : undefined
+    });
+    const data = await res.json().catch(()=>({}));
+    if(!res.ok) throw new Error(data.error || 'Something went wrong');
+    return data;
+  }
+
+  /* ---------- Menu & cart ---------- */
+  function renderTabs(){
+    el('tabs').innerHTML = CATEGORIES.map(c => `<button class="tab ${c===activeCat?'active':''}" data-cat="${c}">${c}</button>`).join('');
+    el('tabs').querySelectorAll('.tab').forEach(btn=>{
+      btn.addEventListener('click', ()=>{ activeCat = btn.dataset.cat; renderTabs(); renderMenu(); });
+    });
+  }
+
+  function renderMenu(){
+    const items = MENU.filter(i => activeCat==='All' || i.cat===activeCat);
+    el('menuGrid').innerHTML = items.map(i => `
+      <div class="item">
+        <div class="item-info"><h3>${i.name}</h3><p class="desc">${i.desc}</p><p class="price">${money(i.price)}</p></div>
+        <div class="item-add">
+          <div class="stepper"><button aria-label="Decrease" data-dec="${i.id}">–</button><span id="qty-${i.id}">${cart[i.id]?.qty || 0}</span><button aria-label="Increase" data-inc="${i.id}">+</button></div>
+          <button class="add-btn" data-add="${i.id}">Add</button>
+        </div>
+      </div>`).join('');
+    el('menuGrid').querySelectorAll('[data-add]').forEach(b=>b.addEventListener('click', ()=>changeQty(b.dataset.add,1)));
+    el('menuGrid').querySelectorAll('[data-inc]').forEach(b=>b.addEventListener('click', ()=>changeQty(b.dataset.inc,1)));
+    el('menuGrid').querySelectorAll('[data-dec]').forEach(b=>b.addEventListener('click', ()=>changeQty(b.dataset.dec,-1)));
+  }
+
+  function changeQty(id, delta){
+    const item = MENU.find(m=>m.id===id);
+    const next = Math.max(0, (cart[id]?.qty || 0) + delta);
+    if(next===0) delete cart[id]; else cart[id] = {item, qty: next};
+    const qtyEl = el('qty-'+id); if(qtyEl) qtyEl.textContent = next;
+    renderCart();
+  }
+
+  function cartItems(){ return Object.values(cart); }
+  function subtotal(){ return cartItems().reduce((s,c)=>s+c.item.price*c.qty,0); }
+
+  function renderCart(){
+    const items = cartItems();
+    const count = items.reduce((s,c)=>s+c.qty,0);
+    el('cartCount').textContent = count;
+    el('checkoutBtn').disabled = count===0;
+    el('drawerBody').innerHTML = items.length===0
+      ? `<p class="empty-cart">Your cart is empty.<br>Add something warm from the menu.</p>`
+      : items.map(c=>`
+        <div class="cart-line">
+          <div><div class="name">${c.item.name}</div><div class="sub">${c.qty} × ${money(c.item.price)}</div></div>
+          <div class="line-right"><div>${money(c.item.price*c.qty)}</div><button class="remove-link" data-remove="${c.item.id}">Remove</button></div>
+        </div>`).join('');
+    el('drawerBody').querySelectorAll('[data-remove]').forEach(b=>b.addEventListener('click', ()=>changeQty(b.dataset.remove, -cart[b.dataset.remove].qty)));
+    el('subtotalText').textContent = money(subtotal());
+    el('totalText').textContent = money(subtotal());
+  }
+
+  /* ---------- Drawers ---------- */
+  const overlay = el('overlay'), drawer = el('drawer'), profileDrawer = el('profileDrawer');
+  function openCart(){ closeAllDrawers(); drawer.classList.add('open'); overlay.classList.add('open'); }
+  function openProfile(){ closeAllDrawers(); renderProfile(); profileDrawer.classList.add('open'); overlay.classList.add('open'); }
+  function closeAllDrawers(){ drawer.classList.remove('open'); profileDrawer.classList.remove('open'); overlay.classList.remove('open'); }
+  el('openCartBtn').addEventListener('click', openCart);
+  el('closeDrawerBtn').addEventListener('click', closeAllDrawers);
+  el('closeProfileBtn').addEventListener('click', closeAllDrawers);
+  overlay.addEventListener('click', ()=>{ closeAllDrawers(); closeCheckout(); closeAuth(); });
+
+  /* ---------- Auth ---------- */
+  function renderAuthArea(){
+    const area = el('authArea');
+    if(currentUser){
+      const initials = currentUser.name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+      area.innerHTML = `<button class="profile-chip" id="profileChipBtn"><span class="avatar">${initials}</span>${currentUser.name.split(' ')[0]}</button>`;
+      el('profileChipBtn').addEventListener('click', openProfile);
+    } else {
+      area.innerHTML = `<button class="login-btn" id="loginTriggerBtn">Log in</button>`;
+      el('loginTriggerBtn').addEventListener('click', ()=> openAuth(false));
+    }
+  }
+
+  async function loadCurrentUser(){
+    try{ currentUser = await api('/auth/me'); }
+    catch(e){ currentUser = null; }
+    renderAuthArea();
+  }
+
+  const authModal = el('authModal');
+  function openAuth(afterCheckout){
+    pendingCheckoutAfterLogin = !!afterCheckout;
+    el('authError').classList.remove('show');
+    authModal.classList.add('open');
+  }
+  function closeAuth(){ authModal.classList.remove('open'); }
+  el('closeAuthBtn').addEventListener('click', closeAuth);
+
+  el('tabLogin').addEventListener('click', ()=>{
+    el('tabLogin').classList.add('active'); el('tabSignup').classList.remove('active');
+    el('loginForm').style.display='block'; el('signupForm').style.display='none';
+  });
+  el('tabSignup').addEventListener('click', ()=>{
+    el('tabSignup').classList.add('active'); el('tabLogin').classList.remove('active');
+    el('signupForm').style.display='block'; el('loginForm').style.display='none';
+  });
+
+  el('loginForm').addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    try{
+      currentUser = await api('/auth/login', {method:'POST', body:{
+        email: el('loginEmail').value, password: el('loginPassword').value
+      }});
+      closeAuth(); renderAuthArea(); showToast('Welcome back, ' + currentUser.name.split(' ')[0] + '!');
+      if(pendingCheckoutAfterLogin){ pendingCheckoutAfterLogin=false; openCheckout(); }
+    }catch(err){ el('authError').textContent = err.message; el('authError').classList.add('show'); }
+  });
+
+  el('signupForm').addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    try{
+      currentUser = await api('/auth/signup', {method:'POST', body:{
+        name: el('signupName').value, email: el('signupEmail').value,
+        phone: el('signupPhone').value, password: el('signupPassword').value
+      }});
+      closeAuth(); renderAuthArea(); showToast('Account created — welcome, ' + currentUser.name.split(' ')[0] + '!');
+      if(pendingCheckoutAfterLogin){ pendingCheckoutAfterLogin=false; openCheckout(); }
+    }catch(err){ el('authError').textContent = err.message; el('authError').classList.add('show'); }
+  });
+
+  async function logout(){
+    try{ await api('/auth/logout', {method:'POST'}); }catch(e){}
+    currentUser = null; renderAuthArea(); closeAllDrawers(); showToast('Logged out');
+  }
+
+  /* ---------- Profile & order history ---------- */
+  async function renderProfile(){
+    if(!currentUser){ el('profileBody').innerHTML = '<p class="empty-cart">Log in to see your profile.</p>'; return; }
+    el('profileBody').innerHTML = `
+      <div class="profile-block">
+        <div class="profile-name">${currentUser.name}</div>
+        <div class="profile-row">${currentUser.email}</div>
+        <div class="profile-row">${currentUser.phone || 'No phone on file'}</div>
+        <button class="logout-btn" id="logoutBtn">Log out</button>
+      </div>
+      <div class="order-hist-title">Your orders</div>
+      <div id="orderHistList"><p class="empty-cart">Loading…</p></div>
+    `;
+    el('logoutBtn').addEventListener('click', logout);
+    try{
+      const orders = await api('/orders/mine');
+      const list = el('orderHistList');
+      list.innerHTML = orders.length===0
+        ? '<p class="empty-cart">No orders yet.</p>'
+        : orders.map(o => `
+          <div class="order-card">
+            <div class="order-card-head"><span class="num">#${o.order_number}</span><span class="badge ${o.status}">${o.status}</span></div>
+            <div class="order-items-line">${o.items.map(i=>`${i.qty}× ${i.name}`).join(', ')}</div>
+            <div class="order-meta">Pickup ${o.pickup_time} · ${money(o.subtotal)}</div>
+          </div>`).join('');
+    }catch(e){ el('orderHistList').innerHTML = '<p class="empty-cart">Could not load orders.</p>'; }
+  }
+
+  /* ---------- Checkout ---------- */
+  const pickupSelect = el('pickupTime');
+  ['12:00 PM','1:00 PM','2:00 PM','5:00 PM','6:00 PM','7:00 PM','8:00 PM'].forEach(t=>{
+    const opt = document.createElement('option'); opt.value=t; opt.textContent=t; pickupSelect.appendChild(opt);
+  });
+
+  const checkoutModal = el('checkoutModal');
+  function openCheckout(){
+    if(!currentUser){ closeAllDrawers(); openAuth(true); return; }
+    el('checkoutError').classList.remove('show');
+    const items = cartItems();
+    el('checkoutSummary').innerHTML = items.map(c=>`<div class="row"><span>${c.qty}× ${c.item.name}</span><span>${money(c.item.price*c.qty)}</span></div>`).join('')
+      + `<div class="row" style="font-weight:700;margin-top:8px;"><span>Total</span><span>${money(subtotal())}</span></div>`;
+    el('custName').value = currentUser.name;
+    el('custPhone').value = currentUser.phone || '';
+    closeAllDrawers();
+    checkoutModal.classList.add('open');
+  }
+  function closeCheckout(){ checkoutModal.classList.remove('open'); }
+  el('checkoutBtn').addEventListener('click', openCheckout);
+  el('closeCheckoutBtn').addEventListener('click', closeCheckout);
+
+  // Shared by both "pay at pickup" and "pay with eSewa" — the order always
+  // gets created the same way; only what happens after differs.
+  async function placeOrder(){
+    const items = cartItems().map(c => ({ name: c.item.name, price: c.item.price, qty: c.qty }));
+    return api('/orders', {method:'POST', body:{
+      items, pickupTime: el('pickupTime').value, note: el('custNote').value
+    }});
+  }
+
+  function showConfirmation(order, subtitle, totalLabel){
+    el('confirmModal').querySelector('.sub').textContent = subtitle;
+    el('orderNumber').textContent = '#' + order.orderNumber;
+    el('confirmSummary').innerHTML =
+      `<div class="row"><span>Pickup time</span><span>${order.pickupTime}</span></div>` +
+      `<div class="row"><span>Status</span><span class="badge pending">pending</span></div>` +
+      `<div class="row" style="font-weight:700;margin-top:8px;"><span>${totalLabel}</span><span>${money(order.subtotal)}</span></div>`;
+    el('confirmModal').classList.add('open');
+    Object.keys(cart).forEach(k=>delete cart[k]);
+    renderMenu(); renderCart();
+    document.getElementById('checkoutForm').reset();
+  }
+
+  // "Pay with eSewa" — place the order first, ask our backend for a signed
+  // eSewa form, then hand the browser off to eSewa's payment page.
+  el('payNowBtn').addEventListener('click', async ()=>{
+    if(!el('checkoutForm').reportValidity()) return;
+    el('checkoutError').classList.remove('show');
+    el('payNowBtn').disabled = true;
+    try{
+      const order = await placeOrder();
+      const { formUrl, fields } = await api(`/payment/esewa/initiate/${order.id}`, {method:'POST'});
+      const f = document.createElement('form');
+      f.method = 'POST';
+      f.action = formUrl;
+      Object.entries(fields).forEach(([name, value])=>{
+        const input = document.createElement('input');
+        input.type = 'hidden'; input.name = name; input.value = value;
+        f.appendChild(input);
+      });
+      document.body.appendChild(f);
+      f.submit(); // navigates the browser away to eSewa — no need to reset UI state
+    }catch(err){
+      el('checkoutError').textContent = err.message;
+      el('checkoutError').classList.add('show');
+      el('payNowBtn').disabled = false;
+    }
+  });
+
+  el('checkoutForm').addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    el('checkoutError').classList.remove('show');
+    try{
+      const order = await placeOrder();
+      closeCheckout();
+      showConfirmation(order, 'Pay at pickup. We\'ll start on it soon.', 'Total to pay at pickup');
+    }catch(err){
+      el('checkoutError').textContent = err.message;
+      el('checkoutError').classList.add('show');
+    }
+  });
+
+  el('closeConfirmBtn').addEventListener('click', ()=> el('confirmModal').classList.remove('open'));
+  el('doneBtn').addEventListener('click', ()=> el('confirmModal').classList.remove('open'));
+
+  // After eSewa redirects back to us, our backend forwards the browser here
+  // with a ?payment=... flag (see backend/routes/payment.js). Surface it once,
+  // then scrub the URL so a page refresh doesn't repeat the message.
+  function handlePaymentRedirect(){
+    const params = new URLSearchParams(window.location.search);
+    const payment = params.get('payment');
+    if(!payment) return;
+    const orderNum = params.get('order');
+    const messages = {
+      success: orderNum ? `Payment received — order #${orderNum} is confirmed!` : 'Payment received!',
+      pending: orderNum ? `Payment for #${orderNum} is still processing — check back shortly.` : 'Payment is still processing.',
+      failed: 'Payment was not completed. You can try again or pay at pickup.',
+      invalid: 'We could not verify that payment. Please contact us with your order number.',
+      unknown: 'We could not find that order. Please contact us if you were charged.',
+      error: 'Something went wrong confirming the payment. Please contact us.',
+    };
+    showToast(messages[payment] || messages.error);
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+
+  renderTabs(); renderMenu(); renderCart(); renderAuthArea(); loadCurrentUser();
+  handlePaymentRedirect();
+})();
+</script>
+</body>
+</html>

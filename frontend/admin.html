@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hamro Kitchen — Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#211C18; --paper:#F7F1E6; --paprika:#A8442A; --paprika-dark:#8A3620;
+    --juniper:#45543C; --mustard:#D9A441; --stone:#E7DFCF; --stone-line:#D8CDB6; --white:#FFFDF9;
+    --radius-s:4px; --radius-m:10px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Work Sans',sans-serif;line-height:1.5;}
+  h1,h2{font-family:'Fraunces',serif;font-weight:600;margin:0;}
+  button{font-family:inherit;cursor:pointer;}
+  .wrap{max-width:1040px;margin:0 auto;padding:36px 28px 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;margin-bottom:32px;}
+  .brand{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:600;}
+  .logout-btn{background:none;border:1px solid var(--paprika);color:var(--paprika);border-radius:var(--radius-s);padding:9px 16px;font-size:0.85rem;font-weight:600;}
+  .logout-btn:hover{background:var(--paprika);color:var(--white);}
+
+  /* Login card */
+  .login-wrap{max-width:380px;margin:120px auto;background:var(--white);border:1px solid var(--stone-line);border-radius:var(--radius-m);padding:32px;}
+  .login-wrap h1{font-size:1.6rem;margin-bottom:6px;}
+  .login-wrap p{color:#6B6255;font-size:0.9rem;margin-bottom:22px;}
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-size:0.85rem;font-weight:600;margin-bottom:6px;}
+  .field input{width:100%;padding:11px 12px;border:1px solid var(--stone-line);border-radius:var(--radius-s);font-family:inherit;font-size:0.95rem;background:var(--paper);color:var(--ink);}
+  .full-btn{width:100%;padding:13px;border:none;border-radius:var(--radius-s);background:var(--paprika);color:var(--white);font-weight:600;font-size:1rem;}
+  .full-btn:hover{background:var(--paprika-dark);}
+  .form-error{background:#F7E3DC;color:var(--paprika-dark);border-radius:var(--radius-s);padding:10px 14px;font-size:0.85rem;margin-bottom:16px;display:none;}
+  .form-error.show{display:block;}
+
+  /* Dashboard */
+  .filters{display:flex;gap:8px;margin-bottom:24px;}
+  .filter-btn{border:1px solid var(--stone-line);background:var(--white);padding:8px 16px;border-radius:999px;font-size:0.88rem;font-weight:500;}
+  .filter-btn.active{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+  .order-row{background:var(--white);border:1px solid var(--stone-line);border-radius:var(--radius-m);padding:20px 22px;margin-bottom:14px;}
+  .order-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;}
+  .order-num{font-family:'Fraunces',serif;font-size:1.15rem;}
+  .order-customer{font-size:0.88rem;color:#4A433C;margin-top:3px;}
+  .order-items{font-size:0.88rem;color:#4A433C;margin-top:10px;}
+  .order-meta{font-size:0.82rem;color:#8A8272;margin-top:6px;}
+  .badge{font-size:0.75rem;font-weight:700;padding:5px 12px;border-radius:999px;text-transform:capitalize;}
+  .badge.pending{background:#F5E6C4;color:#8A6A15;}
+  .badge.made{background:#DCE4D6;color:var(--juniper);}
+  .badge.fulfilled{background:#E2E2E2;color:#555;}
+  .order-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;}
+  .action-btn{border:1px solid var(--stone-line);background:var(--paper);padding:8px 14px;border-radius:var(--radius-s);font-size:0.82rem;font-weight:600;}
+  .action-btn:hover{background:var(--stone);}
+  .action-btn.primary{background:var(--juniper);color:var(--white);border-color:var(--juniper);}
+  .action-btn.primary:hover{background:#374030;}
+  .empty{text-align:center;color:#6B6255;padding:60px 0;}
+</style>
+</head>
+<body>
+
+<div id="loginScreen" class="login-wrap">
+  <h1>Admin login</h1>
+  <p>Kitchen staff only.</p>
+  <div class="form-error" id="loginError"></div>
+  <form id="loginForm">
+    <div class="field"><label for="email">Email</label><input type="email" id="email" required></div>
+    <div class="field"><label for="password">Password</label><input type="password" id="password" required></div>
+    <button type="submit" class="full-btn">Log in</button>
+  </form>
+</div>
+
+<div id="dashboard" class="wrap" style="display:none;">
+  <header>
+    <div class="brand">Hamro Kitchen · Admin</div>
+    <button class="logout-btn" id="logoutBtn">Log out</button>
+  </header>
+  <div class="filters" id="filters"></div>
+  <div id="orderList"></div>
+</div>
+
+<script>
+(function(){
+  const API = '/api';
+  let orders = [];
+  let activeFilter = 'all';
+  const el = (id) => document.getElementById(id);
+
+  async function api(path, opts={}){
+    const res = await fetch(API + path, {
+      method: opts.method || 'GET',
+      headers: {'Content-Type':'application/json'},
+      credentials: 'include',
+      body: opts.body ? JSON.stringify(opts.body) : undefined
+    });
+    const data = await res.json().catch(()=>({}));
+    if(!res.ok) throw new Error(data.error || 'Something went wrong');
+    return data;
+  }
+
+  function money(n){ return 'Rs. ' + n.toLocaleString('en-IN'); }
+
+  function showDashboard(){
+    el('loginScreen').style.display = 'none';
+    el('dashboard').style.display = 'block';
+    loadOrders();
+  }
+  function showLogin(){
+    el('loginScreen').style.display = 'block';
+    el('dashboard').style.display = 'none';
+  }
+
+  async function checkSession(){
+    try{
+      const me = await api('/auth/me');
+      if(me.role === 'admin') showDashboard(); else showLogin();
+    }catch(e){ showLogin(); }
+  }
+
+  el('loginForm').addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    el('loginError').classList.remove('show');
+    try{
+      const user = await api('/auth/login', {method:'POST', body:{
+        email: el('email').value, password: el('password').value
+      }});
+      if(user.role !== 'admin'){
+        el('loginError').textContent = 'This account does not have admin access.';
+        el('loginError').classList.add('show');
+        await api('/auth/logout', {method:'POST'});
+        return;
+      }
+      showDashboard();
+    }catch(err){
+      el('loginError').textContent = err.message;
+      el('loginError').classList.add('show');
+    }
+  });
+
+  el('logoutBtn').addEventListener('click', async ()=>{
+    await api('/auth/logout', {method:'POST'});
+    showLogin();
+  });
+
+  function renderFilters(){
+    const options = [
+      {key:'all', label:'All'},
+      {key:'pending', label:'Pending'},
+      {key:'made', label:'Made'},
+      {key:'fulfilled', label:'Fulfilled'}
+    ];
+    el('filters').innerHTML = options.map(o =>
+      `<button class="filter-btn ${activeFilter===o.key?'active':''}" data-filter="${o.key}">${o.label}</button>`
+    ).join('');
+    el('filters').querySelectorAll('.filter-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{ activeFilter = btn.dataset.filter; renderFilters(); renderOrders(); });
+    });
+  }
+
+  function renderOrders(){
+    const visible = activeFilter==='all' ? orders : orders.filter(o=>o.status===activeFilter);
+    if(visible.length===0){
+      el('orderList').innerHTML = '<p class="empty">No orders here.</p>';
+      return;
+    }
+    el('orderList').innerHTML = visible.map(o => `
+      <div class="order-row">
+        <div class="order-top">
+          <div>
+            <div class="order-num">#${o.order_number}</div>
+            <div class="order-customer">${o.customer_name} · ${o.customer_phone || 'no phone'}</div>
+          </div>
+          <span class="badge ${o.status}">${o.status}</span>
+        </div>
+        <div class="order-items">${o.items.map(i=>`${i.qty}× ${i.name}`).join(', ')}</div>
+        <div class="order-meta">Pickup ${o.pickup_time} · ${money(o.subtotal)} · placed ${new Date(o.created_at).toLocaleString()}${o.note ? ' · note: ' + o.note : ''}</div>
+        <div class="order-actions">
+          <button class="action-btn" data-id="${o.id}" data-status="pending">Mark pending</button>
+          <button class="action-btn primary" data-id="${o.id}" data-status="made">Mark made</button>
+          <button class="action-btn" data-id="${o.id}" data-status="fulfilled">Mark fulfilled</button>
+        </div>
+      </div>
+    `).join('');
+
+    el('orderList').querySelectorAll('[data-status]').forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        try{
+          await api(`/orders/${btn.dataset.id}/status`, {method:'PATCH', body:{status: btn.dataset.status}});
+          await loadOrders();
+        }catch(err){ alert(err.message); }
+      });
+    });
+  }
+
+  async function loadOrders(){
+    try{
+      orders = await api('/orders');
+      renderFilters();
+      renderOrders();
+    }catch(err){
+      el('orderList').innerHTML = `<p class="empty">${err.message}</p>`;
+    }
+  }
+
+  checkSession();
+})();
+</script>
+</body>
+</html>
